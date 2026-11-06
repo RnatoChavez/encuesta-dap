@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Encuesta — Entrega de medicamentos a domicilio | Medi Ruta-360</title>
+<style>
+  :root{
+    --azul:#1b4965; --azul2:#5fa8d3; --verde:#2e7d32; --bg:#f4f7f9;
+    --gris:#5b6b73; --borde:#dbe4e8; --rojo:#c0392b; --ambar:#fff6e0;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg); margin:0; color:#1d2a30; line-height:1.5; font-size:17px;}
+  header{background:linear-gradient(135deg,var(--azul),var(--azul2)); color:#fff;
+    padding:26px 18px 20px; text-align:center;}
+  header h1{margin:0 0 6px; font-size:1.35rem;}
+  header p{margin:0; font-size:.95rem; opacity:.92;}
+  .wrap{max-width:760px; margin:0 auto; padding:16px;}
+  .card{background:#fff; border-radius:14px; padding:20px; margin-top:16px;
+    box-shadow:0 2px 10px rgba(0,0,0,.06);}
+  .progress-box{background:#eef5f8; border:1px solid var(--borde); border-radius:10px;
+    padding:10px 14px; font-size:.9rem; color:var(--azul);}
+  .progress-bar{background:#dbe4e8; border-radius:6px; height:8px; margin-top:6px; overflow:hidden;}
+  .progress-fill{background:var(--azul2); height:100%; transition:width .4s;}
+  .version{margin-top:8px; font-size:.85rem; color:var(--gris);}
+  h2{font-size:1.05rem; color:#fff; background:var(--azul2); padding:8px 12px;
+    border-radius:8px; margin:22px 0 12px;}
+  h2:first-child{margin-top:0;}
+  .q{padding:12px 2px; border-top:1px solid #eef1f3;}
+  .q:first-of-type{border-top:none;}
+  .q .t{font-weight:600; margin-bottom:8px;}
+  .q .t b{color:var(--azul); margin-right:4px;}
+  .opts{display:flex; flex-wrap:wrap; gap:8px;}
+  .opts label{display:flex; align-items:center; gap:8px; border:1px solid var(--borde);
+    border-radius:10px; padding:10px 16px; cursor:pointer; background:#fbfdfe; min-width:90px;}
+  .opts.col{flex-direction:column;}
+  .opts label:has(input:checked){border-color:var(--azul); background:#e8f1f7;}
+  input[type=radio]{width:20px; height:20px; accent-color:var(--azul); margin:0;}
+  input[type=text], input[type=number], input[type=tel], select{width:100%; max-width:320px;
+    padding:10px; border:1px solid var(--borde); border-radius:8px; font-size:1rem; background:#fbfdfe;}
+  .scenario{background:var(--ambar); border-left:5px solid #e0a800; border-radius:8px;
+    padding:14px 16px; font-size:1.02rem;}
+  .price{font-size:1.25rem; color:var(--azul); font-weight:800; white-space:nowrap;}
+  .note{font-size:.85rem; color:var(--gris);}
+  .hidden{display:none !important;}
+  .endbox{background:#fdecea; color:var(--rojo); border-radius:10px; padding:14px; font-weight:600;}
+  button.submit{width:100%; background:var(--verde); color:#fff; border:none; padding:15px;
+    border-radius:10px; font-size:1.05rem; font-weight:700; cursor:pointer; margin-top:16px;}
+  button.submit:disabled{background:#9fb3ba; cursor:not-allowed;}
+  button.reset{background:none; border:1px solid var(--borde); color:var(--azul); padding:10px 16px;
+    border-radius:8px; cursor:pointer; margin-top:10px;}
+  .msg{padding:12px 14px; border-radius:8px; margin-top:14px; font-size:.95rem; display:none;}
+  .msg.ok{background:#e6f4ea; color:#256029; display:block;}
+  .msg.err{background:#fdecea; color:var(--rojo); display:block;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Encuesta: servicio de entrega de medicamentos a domicilio</h1>
+  <p>Medi Ruta-360 · Facultad de Medicina — Universidad César Vallejo</p>
+</header>
+
+<div class="wrap">
+  <div class="card">
+    <div class="progress-box" id="progressBox">Cargando avance…</div>
+    <div class="version" id="versionBox"></div>
+  </div>
+
+  <form class="card" id="form" onsubmit="return false;">
+
+    <h2>Datos de la encuesta</h2>
+    <div class="q"><div class="t">Encuestador(a)</div><input type="text" id="ENCUESTADOR" placeholder="Nombre de quien aplica la encuesta"></div>
+    <div class="q"><div class="t">Distrito del hogar</div>
+      <select id="DISTRITO">
+        <option value="">— Seleccione —</option>
+        <option>San Martín de Porres</option><option>Los Olivos</option><option>Comas</option>
+        <option>Independencia</option><option>Puente Piedra</option><option>Carabayllo</option><option>Otro</option>
+      </select>
+    </div>
+
+    <h2>A. Presentación y filtro</h2>
+    <p class="note">Leer: «Buenos días. Somos estudiantes de Medicina de la Universidad César Vallejo y hacemos un estudio sobre un servicio de apoyo para adultos mayores. La encuesta es anónima, voluntaria y dura unos 10 minutos. Sus respuestas solo se usarán con fines académicos.»</p>
+    <div id="filtro"></div>
+    <div class="endbox hidden" id="finFiltro"></div>
+
+    <div id="cuerpo" class="hidden">
+      <h2>B. Perfil del hogar y del adulto mayor</h2>
+      <div class="q"><div class="t"><b>5.</b>Edad del adulto mayor (años)</div><input type="number" id="EDAD" min="60" max="110"></div>
+      <div id="perfil1"></div>
+      <div class="q"><div class="t"><b>13.</b>¿Cuántas veces al mes va a recoger o comprar sus medicamentos?</div><input type="number" id="VECES" min="0" max="31" step="1"></div>
+      <div class="q"><div class="t"><b>14.</b>¿Cuánto gasta en movilidad cada vez que va? (S/)</div><input type="number" id="MOVILIDAD" min="0" step="0.5"></div>
+      <div class="q"><div class="t"><b>15.</b>¿Cuánto tiempo le toma en total cada vez (ida, espera y vuelta)? (horas)</div><input type="number" id="HORAS" min="0" step="0.5"></div>
+      <div id="perfil2"></div>
+
+      <h2>C. Escenario (leer textualmente)</h2>
+      <div class="scenario">
+        Imagine un servicio llamado <b>Medi Ruta-360</b>. Usted envía por WhatsApp una foto de la receta de su familiar.
+        Una asesora confirma el pedido, recoge el medicamento en la farmacia de EsSalud, en Farmacia Vecina o en la botica
+        que usted indique, y se lo entrega en su casa en un plazo máximo de 48 horas. Usted recibe un mensaje cuando el
+        pedido sale y otro cuando llega. El precio del medicamento no está incluido: solo se paga el servicio de recojo y
+        entrega, cada vez que se usa.<br><br>
+        Recuerde que, si paga por este servicio, tendrá menos dinero para otros gastos del hogar. No hay respuestas buenas ni malas.
+      </div>
+
+      <h2>D. Disposición a pagar</h2>
+      <div class="q"><div class="t"><b>20.</b>Si el servicio costara <span class="price" id="bidTxt">S/ —</span> por cada recojo y entrega, ¿lo contrataría?</div>
+        <div class="opts"><label><input type="radio" name="SI_DAP" value="1">Sí</label><label><input type="radio" name="SI_DAP" value="0">No</label></div></div>
+      <div class="q hidden" id="q21"><div class="t"><b>21.</b>¿Y si costara <span class="price" id="bid2Txt">S/ —</span> por cada recojo y entrega?</div>
+        <div class="opts"><label><input type="radio" name="SI_DAP2" value="1">Sí</label><label><input type="radio" name="SI_DAP2" value="0">No</label></div></div>
+      <div class="q"><div class="t"><b>22.</b>¿Qué tan seguro está de su respuesta?</div>
+        <div class="opts"><label><input type="radio" name="SEGURO" value="1">Muy seguro</label><label><input type="radio" name="SEGURO" value="0">No muy seguro</label></div></div>
+
+      <h2>E. Seguimiento</h2>
+      <div class="q hidden" id="q23"><div class="t"><b>23.</b>¿Cuál es el motivo principal por el que no lo contrataría?</div>
+        <div class="opts col">
+          <label><input type="radio" name="MOTIVO_NO" value="1">No me alcanza el dinero</label>
+          <label><input type="radio" name="MOTIVO_NO" value="2">El servicio no vale ese precio</label>
+          <label><input type="radio" name="MOTIVO_NO" value="3">Prefiero recogerlo yo mismo</label>
+          <label><input type="radio" name="MOTIVO_NO" value="4">No confío en enviar la foto de la receta o mis datos</label>
+          <label><input type="radio" name="MOTIVO_NO" value="5">Ese servicio debería darlo gratis EsSalud o el Estado</label>
+          <label><input type="radio" name="MOTIVO_NO" value="6">Otro motivo</label>
+        </div></div>
+      <div class="q hidden" id="q24"><div class="t"><b>24.</b>¿Le gustaría que le avisemos cuando el servicio esté disponible?</div>
+        <div class="opts"><label><input type="radio" name="AVISAR" value="1">Sí</label><label><input type="radio" name="AVISAR" value="0">No</label></div>
+        <div style="margin-top:10px" id="celBox" class="hidden"><input type="tel" id="CELULAR" placeholder="Celular (opcional)"></div></div>
+
+      <button class="submit" id="btn" type="button" onclick="enviar()">Enviar respuesta</button>
+      <div class="msg" id="msg"></div>
+    </div>
+    <button class="reset" type="button" onclick="nueva()">Nueva encuesta</button>
+  </form>
+</div>
+
+<script>
+// Pegar aquí la URL del Web App de Apps Script (termina en /exec)
+const WEB_APP_URL = "PEGA_AQUI_LA_URL_DEL_WEB_APP";
+
+const BIDS = [5, 10, 15, 20, 25];          // V1..V5, precio inicial (S/)
+const BID_ALTO = {5:10, 10:20, 15:30, 20:40, 25:50};
+const BID_BAJO = {5:3, 10:5, 15:8, 20:10, 25:13};
+let VERSION = null, BID = null;
+
+const FILTRO = [
+  ["F1","1.","¿Acepta participar en la encuesta?","Sin consentimiento: agradezca y termine la encuesta."],
+  ["F2","2.","¿Vive con usted, o está a su cargo, una persona de 60 años o más?","No cumple el perfil: agradezca y termine."],
+  ["F3","3.","¿Esa persona toma medicamentos de forma continua por una enfermedad crónica (presión alta, diabetes, colesterol, artrosis u otra)?","No cumple el perfil: agradezca y termine."],
+  ["F4","4.","¿Usted es quien se encarga de conseguir esos medicamentos?","Pida hablar con quien se encarga de los medicamentos y empiece de nuevo con esa persona."]
+];
+const PERFIL1 = [
+  ["MUJER","6.","¿El adulto mayor es mujer?"],
+  ["ESSALUD","7.","¿Tiene seguro de EsSalud?"],
+  ["SIS","8.","¿Tiene SIS?"],
+  ["POLIMED","9.","¿Toma tres o más medicamentos distintos al mes?"],
+  ["DEPEND","10.","¿Tiene dificultad para caminar o salir solo de casa?"],
+  ["TRABAJA","11.","¿Usted (el familiar) trabaja actualmente?"],
+  ["PERMISO","12.","¿Ha tenido que faltar o pedir permiso en el trabajo para recoger medicamentos en los últimos 3 meses?"]
+];
+const PERFIL2 = [
+  ["SINSTOCK","16.","¿Alguna vez ha regresado sin el medicamento porque no había stock?"],
+  ["WHATSAPP","17.","¿El adulto mayor o usted usan WhatsApp todos los días?"],
+  ["DELIVERY","18.","¿Ha usado alguna vez un delivery de botica o farmacia?"],
+  ["INGRESO","19.","¿El ingreso mensual de su hogar es mayor a S/ 2 500?"]
+];
+
+function siNo(name, num, txt){
+  return `<div class="q"><div class="t"><b>${num}</b>${txt}</div><div class="opts">
+    <label><input type="radio" name="${name}" value="1">Sí</label>
+    <label><input type="radio" name="${name}" value="0">No</label></div></div>`;
+}
+document.getElementById("filtro").innerHTML = FILTRO.map(f => siNo(f[0], f[1], f[2])).join("");
+document.getElementById("perfil1").innerHTML = PERFIL1.map(f => siNo(...f)).join("");
+document.getElementById("perfil2").innerHTML = PERFIL2.map(f => siNo(...f)).join("");
+
+const val = n => { const c = document.querySelector(`input[name="${n}"]:checked`); return c ? c.value : null; };
+const show = (id, on) => document.getElementById(id).classList.toggle("hidden", !on);
+
+function evaluarFiltro(){
+  let ok = true, fin = "";
+  for (const f of FILTRO){
+    const v = val(f[0]);
+    if (v === "0"){ ok = false; fin = f[3]; break; }
+    if (v === null){ ok = false; }
+  }
+  show("cuerpo", ok);
+  const fb = document.getElementById("finFiltro");
+  fb.textContent = fin; fb.classList.toggle("hidden", !fin);
+}
+
+let ultimoSI = null;
+function evaluarDAP(){
+  const s = val("SI_DAP");
+  if (s !== ultimoSI){   // si cambia la respuesta 20, la repregunta se vuelve a contestar
+    document.querySelectorAll('input[name="SI_DAP2"]').forEach(i => i.checked = false);
+    ultimoSI = s;
+  }
+  show("q21", s !== null);
+  show("q23", s === "0");
+  show("q24", s === "1");
+  if (s !== null){
+    const b2 = s === "1" ? BID_ALTO[BID] : BID_BAJO[BID];
+    document.getElementById("bid2Txt").textContent = "S/ " + b2;
+  }
+  show("celBox", val("AVISAR") === "1");
+}
+
+document.getElementById("form").addEventListener("change", () => { evaluarFiltro(); evaluarDAP(); });
+
+function fijarVersion(v){
+  VERSION = v; BID = BIDS[v - 1];
+  document.getElementById("bidTxt").textContent = "S/ " + BID;
+  document.getElementById("versionBox").textContent =
+    `Solo para el encuestador: versión V${VERSION} · precio inicial S/ ${BID}`;
+}
+
+function cargarAvance(){
+  const box = document.getElementById("progressBox");
+  if (WEB_APP_URL.indexOf("PEGA_AQUI") === 0){
+    box.textContent = "Modo prueba: falta configurar la URL del Web App (WEB_APP_URL). La versión se asigna al azar.";
+    fijarVersion(1 + Math.floor(Math.random() * 5));
+    return;
+  }
+  fetch(WEB_APP_URL).then(r => r.json()).then(d => {
+    const pct = Math.min(100, Math.round(d.total / d.meta * 100));
+    box.innerHTML = `Encuestas registradas: <b>${d.total} / ${d.meta}</b>
+      <span class="note">(V1–V5: ${d.porVersion.join(" · ")})</span>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>`;
+    fijarVersion(d.siguiente);
+  }).catch(() => {
+    box.textContent = "No se pudo cargar el avance. La versión se asignó al azar.";
+    fijarVersion(1 + Math.floor(Math.random() * 5));
+  });
+}
+
+function num(id){ const v = document.getElementById(id).value; return v === "" ? null : Number(v); }
+
+function enviar(){
+  const msg = document.getElementById("msg");
+  msg.className = "msg";
+  const err = t => { msg.className = "msg err"; msg.textContent = t; };
+
+  if (WEB_APP_URL.indexOf("PEGA_AQUI") === 0) return err("Falta configurar la URL del Web App (WEB_APP_URL) en el archivo HTML.");
+  if (!document.getElementById("DISTRITO").value) return err("Seleccione el distrito.");
+
+  const d = { VERSION, BID,
+    ENCUESTADOR: document.getElementById("ENCUESTADOR").value.trim(),
+    DISTRITO: document.getElementById("DISTRITO").value,
+    EDAD: num("EDAD"), VECES: num("VECES"), MOVILIDAD: num("MOVILIDAD"), HORAS: num("HORAS") };
+  for (const k of ["EDAD","VECES","MOVILIDAD","HORAS"]) if (d[k] === null) return err("Complete el campo numérico: " + k + ".");
+
+  for (const f of PERFIL1.concat(PERFIL2)){
+    const v = val(f[0]); if (v === null) return err("Responda la pregunta " + f[1]);
+    d[f[0]] = Number(v);
+  }
+  const s = val("SI_DAP"), s2 = val("SI_DAP2"), seg = val("SEGURO");
+  if (s === null) return err("Responda la pregunta 20 (disposición a pagar).");
+  if (s2 === null) return err("Responda la pregunta 21.");
+  if (seg === null) return err("Responda la pregunta 22.");
+  d.SI_DAP = Number(s); d.SI_DAP2 = Number(s2); d.SEGURO = Number(seg);
+  d.BID2 = s === "1" ? BID_ALTO[BID] : BID_BAJO[BID];
+
+  if (s === "0"){
+    const m = val("MOTIVO_NO"); if (m === null) return err("Responda la pregunta 23 (motivo).");
+    d.MOTIVO_NO = Number(m); d.PROTESTA = (m === "4" || m === "5") ? 1 : 0;
+  } else {
+    d.MOTIVO_NO = ""; d.PROTESTA = 0;
+    const a = val("AVISAR"); if (a === null) return err("Responda la pregunta 24.");
+    d.AVISAR = Number(a); d.CELULAR = a === "1" ? document.getElementById("CELULAR").value.trim() : "";
+  }
+
+  const btn = document.getElementById("btn");
+  btn.disabled = true; btn.textContent = "Enviando…";
+  fetch(WEB_APP_URL, { method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" }, body: JSON.stringify(d) })
+    .then(r => r.json()).then(res => {
+      if (res.ok){
+        msg.className = "msg ok";
+        msg.textContent = "¡Gracias! Respuesta registrada con el N.º " + res.id + ". Pulse «Nueva encuesta» para la siguiente.";
+        btn.textContent = "Enviado";
+      } else { err(res.error || "Ocurrió un error al enviar."); btn.disabled = false; btn.textContent = "Enviar respuesta"; }
+    }).catch(e => { err("Error de conexión: " + e); btn.disabled = false; btn.textContent = "Enviar respuesta"; });
+}
+
+function nueva(){
+  const enc = document.getElementById("ENCUESTADOR").value, dis = document.getElementById("DISTRITO").value;
+  document.getElementById("form").reset();
+  document.getElementById("ENCUESTADOR").value = enc; document.getElementById("DISTRITO").value = dis;
+  const btn = document.getElementById("btn"); btn.disabled = false; btn.textContent = "Enviar respuesta";
+  document.getElementById("msg").className = "msg";
+  evaluarFiltro(); evaluarDAP(); cargarAvance(); window.scrollTo(0, 0);
+}
+
+cargarAvance();
+</script>
+</body>
+</html>
