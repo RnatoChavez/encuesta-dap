@@ -15,18 +15,17 @@
  * 5. Pega esa URL en index.html, en la constante WEB_APP_URL
  *    (o enviasela a Claude para que la actualice en GitHub).
  *
- * Asignacion de versiones: doGet devuelve cuantas respuestas tiene cada
- * version (V1-V5) y cual es la siguiente, para que las 5 queden balanceadas.
+ * Escalera de precios: S/ 10 -> 20 -> 30 -> 40 (si dice No en 10, se pregunta 5).
+ * DAP_MIN = ultimo precio aceptado; DAP_MAX = primer precio rechazado (vacio si acepta 40).
  */
 
 const SHEET_NAME = "Respuestas";
-const META = 150;                       // meta total: 30 por version
-const BIDS = [5, 10, 15, 20, 25];       // precio inicial por version (S/)
+const META = 100;                       // meta de encuestas
 
-const HEADERS = ["FECHA_HORA","ID","VERSION","BID","SI_DAP","BID2","SI_DAP2","SEGURO",
-  "MOTIVO_NO","PROTESTA","EDAD","MUJER","ESSALUD","SIS","POLIMED","DEPEND","TRABAJA",
+const HEADERS = ["FECHA_HORA","ID","DISTRITO","EDAD","MUJER","POLIMED","DEPEND","TRABAJA",
   "PERMISO","VECES","MOVILIDAD","HORAS","SINSTOCK","WHATSAPP","DELIVERY","INGRESO",
-  "DISTRITO","ENCUESTADOR","AVISAR","CELULAR"];
+  "SI_10","SI_5","SI_20","SI_30","SI_40","DAP_MIN","DAP_MAX","DAP_ABIERTA","SEGURO",
+  "MOTIVO_NO","PROTESTA","AVISAR","CELULAR"];
 
 function getSheet_() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -41,35 +40,14 @@ function setupSheet() {
   sh.autoResizeColumns(1, HEADERS.length);
 }
 
-function countByVersion_(sh) {
-  const counts = [0, 0, 0, 0, 0];
-  const last = sh.getLastRow();
-  if (last < 2) return counts;
-  const col = HEADERS.indexOf("VERSION") + 1;
-  sh.getRange(2, col, last - 1, 1).getValues().forEach(function (r) {
-    const v = parseInt(r[0], 10);
-    if (v >= 1 && v <= 5) counts[v - 1]++;
-  });
-  return counts;
-}
-
-function nextVersion_(counts) {
-  let best = 0;
-  for (let i = 1; i < counts.length; i++) if (counts[i] < counts[best]) best = i;
-  return best + 1;
-}
-
 function json_(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj))
     .setMimeType(ContentService.MimeType.JSON);
 }
 
 function doGet(e) {
-  const counts = countByVersion_(getSheet_());
-  const total = counts.reduce(function (a, b) { return a + b; }, 0);
-  const next = nextVersion_(counts);
-  return json_({ ok: true, total: total, meta: META, porVersion: counts,
-                 siguiente: next, bid: BIDS[next - 1] });
+  const total = Math.max(getSheet_().getLastRow() - 1, 0);
+  return json_({ ok: true, total: total, meta: META });
 }
 
 function doPost(e) {

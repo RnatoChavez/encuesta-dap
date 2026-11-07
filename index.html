@@ -65,8 +65,7 @@
 <div class="wrap">
   <div class="card">
     <div class="progress-box" id="progressBox">Cargando avance…</div>
-    <div class="version" id="versionBox"></div>
-  </div>
+      </div>
 
   <form class="card" id="form" onsubmit="return false;">
 
@@ -98,15 +97,24 @@
       </div>
 
       <h2>C. Disposición a pagar</h2>
-      <div class="q"><div class="t"><b>14.</b>Si el servicio costara <span class="price" id="bidTxt">S/ —</span> por cada recojo y entrega, ¿lo contrataría?</div>
-        <div class="opts"><label><input type="radio" name="SI_DAP" value="1">Sí</label><label><input type="radio" name="SI_DAP" value="0">No</label></div></div>
-      <div class="q hidden" id="q21"><div class="t"><b>15.</b>¿Y si costara <span class="price" id="bid2Txt">S/ —</span> por cada recojo y entrega?</div>
-        <div class="opts"><label><input type="radio" name="SI_DAP2" value="1">Sí</label><label><input type="radio" name="SI_DAP2" value="0">No</label></div></div>
-      <div class="q"><div class="t"><b>16.</b>¿Qué tan seguro está de su respuesta?</div>
+      <p class="note">Pregunte un precio a la vez. Si responde Sí, pase al siguiente precio más alto; si responde No, deténgase.</p>
+      <div class="q" id="qL10"><div class="t"><b>14.</b>Si el servicio costara <span class="price">S/ 10</span> por cada recojo y entrega, ¿lo contrataría?</div>
+        <div class="opts"><label><input type="radio" name="SI_10" value="1">Sí</label><label><input type="radio" name="SI_10" value="0">No</label></div></div>
+      <div class="q hidden" id="qL5"><div class="t">¿Y si costara <span class="price">S/ 5</span>?</div>
+        <div class="opts"><label><input type="radio" name="SI_5" value="1">Sí</label><label><input type="radio" name="SI_5" value="0">No</label></div></div>
+      <div class="q hidden" id="qL20"><div class="t">¿Y si costara <span class="price">S/ 20</span>?</div>
+        <div class="opts"><label><input type="radio" name="SI_20" value="1">Sí</label><label><input type="radio" name="SI_20" value="0">No</label></div></div>
+      <div class="q hidden" id="qL30"><div class="t">¿Y si costara <span class="price">S/ 30</span>?</div>
+        <div class="opts"><label><input type="radio" name="SI_30" value="1">Sí</label><label><input type="radio" name="SI_30" value="0">No</label></div></div>
+      <div class="q hidden" id="qL40"><div class="t">¿Y si costara <span class="price">S/ 40</span>?</div>
+        <div class="opts"><label><input type="radio" name="SI_40" value="1">Sí</label><label><input type="radio" name="SI_40" value="0">No</label></div></div>
+      <div class="q hidden" id="qMax"><div class="t">¿Cuánto es lo máximo que pagaría por cada recojo y entrega? (S/)</div><input type="number" id="DAP_ABIERTA" min="40" step="1"></div>
+      <div class="q hidden" id="qRes"><div class="t">Resultado: <span class="price" id="resTxt"></span></div></div>
+      <div class="q"><div class="t"><b>15.</b>¿Qué tan seguro está de su respuesta?</div>
         <div class="opts"><label><input type="radio" name="SEGURO" value="1">Muy seguro</label><label><input type="radio" name="SEGURO" value="0">No muy seguro</label></div></div>
 
       <h2>D. Seguimiento</h2>
-      <div class="q hidden" id="q23"><div class="t"><b>17.</b>¿Cuál es el motivo principal por el que no lo contrataría?</div>
+      <div class="q hidden" id="q23"><div class="t"><b>16.</b>¿Cuál es el motivo principal por el que no lo contrataría a S/ 10?</div>
         <div class="opts col">
           <label><input type="radio" name="MOTIVO_NO" value="1">No me alcanza el dinero</label>
           <label><input type="radio" name="MOTIVO_NO" value="2">El servicio no vale ese precio</label>
@@ -115,7 +123,7 @@
           <label><input type="radio" name="MOTIVO_NO" value="5">Ese servicio debería darlo gratis EsSalud o el Estado</label>
           <label><input type="radio" name="MOTIVO_NO" value="6">Otro motivo</label>
         </div></div>
-      <div class="q hidden" id="q24"><div class="t"><b>18.</b>¿Le gustaría que le avisemos cuando el servicio esté disponible?</div>
+      <div class="q hidden" id="q24"><div class="t"><b>17.</b>¿Le gustaría que le avisemos cuando el servicio esté disponible?</div>
         <div class="opts"><label><input type="radio" name="AVISAR" value="1">Sí</label><label><input type="radio" name="AVISAR" value="0">No</label></div>
         <div style="margin-top:10px" id="celBox" class="hidden"><input type="tel" id="CELULAR" placeholder="Celular (opcional)"></div></div>
 
@@ -130,10 +138,8 @@
 // Pegar aquí la URL del Web App de Apps Script (termina en /exec)
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzDXqBLV3mwz-b84i1XVB3o4UIdJVZg9pBLC0IFCiVrOdVVL0o91gD_57JVjElI0bN0-g/exec";
 
-const BIDS = [5, 10, 15, 20, 25];          // V1..V5, precio inicial (S/)
-const BID_ALTO = {5:10, 10:20, 15:30, 20:40, 25:50};
-const BID_BAJO = {5:3, 10:5, 15:8, 20:10, 25:13};
-let VERSION = null, BID = null;
+// Escalera de precios (S/): se empieza en 10; si dice Sí sube a 20, 30, 40; si dice No en 10, se pregunta 5.
+const SUBE = [10, 20, 30, 40];
 
 const PERFIL1 = [
   ["MUJER","2.","¿El adulto mayor es mujer?"],
@@ -160,49 +166,64 @@ document.getElementById("perfil2").innerHTML = PERFIL2.map(f => siNo(...f)).join
 const val = n => { const c = document.querySelector(`input[name="${n}"]:checked`); return c ? c.value : null; };
 const show = (id, on) => document.getElementById(id).classList.toggle("hidden", !on);
 
-let ultimoSI = null;
-function evaluarDAP(){
-  const s = val("SI_DAP");
-  if (s !== ultimoSI){   // si cambia la respuesta 14, la repregunta se vuelve a contestar
-    document.querySelectorAll('input[name="SI_DAP2"]').forEach(i => i.checked = false);
-    ultimoSI = s;
+// Calcula hasta dónde llega el encuestado en la escalera: DAP_MIN = último precio aceptado, DAP_MAX = primer precio rechazado
+function escalera(){
+  const r = { SI_5:"", SI_10:"", SI_20:"", SI_30:"", SI_40:"", DAP_MIN:null, DAP_MAX:null, completa:false };
+  const v10 = val("SI_10");
+  if (v10 === null) return r;
+  r.SI_10 = Number(v10);
+  if (v10 === "0"){
+    const v5 = val("SI_5"); if (v5 === null) return r;
+    r.SI_5 = Number(v5);
+    if (v5 === "1"){ r.DAP_MIN = 5; r.DAP_MAX = 10; } else { r.DAP_MIN = 0; r.DAP_MAX = 5; }
+    r.completa = true; return r;
   }
-  show("q21", s !== null);
-  show("q23", s === "0");
-  show("q24", s === "1");
-  if (s !== null){
-    const b2 = s === "1" ? BID_ALTO[BID] : BID_BAJO[BID];
-    document.getElementById("bid2Txt").textContent = "S/ " + b2;
+  for (let i = 1; i < SUBE.length; i++){
+    const v = val("SI_" + SUBE[i]); if (v === null) return r;
+    r["SI_" + SUBE[i]] = Number(v);
+    if (v === "0"){ r.DAP_MIN = SUBE[i-1]; r.DAP_MAX = SUBE[i]; r.completa = true; return r; }
   }
+  r.DAP_MIN = 40; r.DAP_MAX = ""; r.completa = true;   // aceptó S/ 40: DAP de 40 a más
+  return r;
+}
+
+function limpiar(names){ names.forEach(n => document.querySelectorAll(`input[name="${n}"]`).forEach(i => i.checked = false)); }
+
+function evaluarDAP(ev){
+  // si cambia un escalón, se borran los escalones siguientes
+  const orden = ["SI_10","SI_5","SI_20","SI_30","SI_40"];
+  const nombre = ev && ev.target ? ev.target.name : null;
+  if (nombre === "SI_10") limpiar(["SI_5","SI_20","SI_30","SI_40"]);
+  if (nombre === "SI_20") limpiar(["SI_30","SI_40"]);
+  if (nombre === "SI_30") limpiar(["SI_40"]);
+  const v10 = val("SI_10"), v20 = val("SI_20"), v30 = val("SI_30"), v40 = val("SI_40");
+  show("qL5", v10 === "0");
+  show("qL20", v10 === "1");
+  show("qL30", v10 === "1" && v20 === "1");
+  show("qL40", v10 === "1" && v20 === "1" && v30 === "1");
+  show("qMax", v40 === "1");
+  const r = escalera();
+  show("qRes", r.completa);
+  if (r.completa){
+    document.getElementById("resTxt").textContent =
+      r.DAP_MAX === "" ? "paga S/ 40 o más" :
+      r.DAP_MIN === 0 ? "no pagaría ni S/ 5" : `acepta S/ ${r.DAP_MIN}, rechaza S/ ${r.DAP_MAX}`;
+  }
+  show("q23", v10 === "0");
+  show("q24", r.completa && r.DAP_MIN > 0);
   show("celBox", val("AVISAR") === "1");
 }
 
-document.getElementById("form").addEventListener("change", () => { evaluarDAP(); });
-
-function fijarVersion(v){
-  VERSION = v; BID = BIDS[v - 1];
-  document.getElementById("bidTxt").textContent = "S/ " + BID;
-  document.getElementById("versionBox").textContent =
-    `Solo para el encuestador: versión V${VERSION} · precio inicial S/ ${BID}`;
-}
+document.getElementById("form").addEventListener("change", ev => { evaluarDAP(ev); });
 
 function cargarAvance(){
   const box = document.getElementById("progressBox");
-  if (WEB_APP_URL.indexOf("PEGA_AQUI") === 0){
-    box.textContent = "Modo prueba: falta configurar la URL del Web App (WEB_APP_URL). La versión se asigna al azar.";
-    fijarVersion(1 + Math.floor(Math.random() * 5));
-    return;
-  }
+  if (WEB_APP_URL.indexOf("PEGA_AQUI") === 0){ box.textContent = "Modo prueba: falta configurar la URL del Web App (WEB_APP_URL)."; return; }
   fetch(WEB_APP_URL).then(r => r.json()).then(d => {
     const pct = Math.min(100, Math.round(d.total / d.meta * 100));
     box.innerHTML = `Encuestas registradas: <b>${d.total} / ${d.meta}</b>
-      <span class="note">(V1–V5: ${d.porVersion.join(" · ")})</span>
       <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>`;
-    fijarVersion(d.siguiente);
-  }).catch(() => {
-    box.textContent = "No se pudo cargar el avance. La versión se asignó al azar.";
-    fijarVersion(1 + Math.floor(Math.random() * 5));
-  });
+  }).catch(() => { box.textContent = "No se pudo cargar el avance."; });
 }
 
 function num(id){ const v = document.getElementById(id).value; return v === "" ? null : Number(v); }
@@ -215,7 +236,7 @@ function enviar(){
   if (WEB_APP_URL.indexOf("PEGA_AQUI") === 0) return err("Falta configurar la URL del Web App (WEB_APP_URL) en el archivo HTML.");
   if (!document.getElementById("DISTRITO").value) return err("Seleccione el distrito.");
 
-  const d = { VERSION, BID,
+  const d = {
     DISTRITO: document.getElementById("DISTRITO").value,
     EDAD: num("EDAD"), VECES: num("VECES"), MOVILIDAD: num("MOVILIDAD"), HORAS: num("HORAS") };
   for (const k of ["EDAD","VECES","MOVILIDAD","HORAS"]) if (d[k] === null) return err("Complete el campo numérico: " + k + ".");
@@ -224,19 +245,18 @@ function enviar(){
     const v = val(f[0]); if (v === null) return err("Responda la pregunta " + f[1]);
     d[f[0]] = Number(v);
   }
-  const s = val("SI_DAP"), s2 = val("SI_DAP2"), seg = val("SEGURO");
-  if (s === null) return err("Responda la pregunta 14 (disposición a pagar).");
-  if (s2 === null) return err("Responda la pregunta 15.");
-  if (seg === null) return err("Responda la pregunta 16.");
-  d.SI_DAP = Number(s); d.SI_DAP2 = Number(s2); d.SEGURO = Number(seg);
-  d.BID2 = s === "1" ? BID_ALTO[BID] : BID_BAJO[BID];
-
-  if (s === "0"){
-    const m = val("MOTIVO_NO"); if (m === null) return err("Responda la pregunta 17 (motivo).");
-    d.MOTIVO_NO = Number(m); d.PROTESTA = (m === "4" || m === "5") ? 1 : 0;
-  } else {
-    d.MOTIVO_NO = ""; d.PROTESTA = 0;
-    const a = val("AVISAR"); if (a === null) return err("Responda la pregunta 18.");
+  const r = escalera();
+  if (!r.completa) return err("Complete la pregunta 14: siga preguntando precios hasta que responda No (o acepte S/ 40).");
+  const seg = val("SEGURO"); if (seg === null) return err("Responda la pregunta 15.");
+  for (const k of ["SI_5","SI_10","SI_20","SI_30","SI_40","DAP_MIN","DAP_MAX"]) d[k] = r[k];
+  d.DAP_ABIERTA = r.DAP_MAX === "" ? (num("DAP_ABIERTA") ?? "") : "";
+  d.SEGURO = Number(seg);
+  if (r.SI_10 === 0){
+    const m = val("MOTIVO_NO"); if (m === null) return err("Responda la pregunta 16 (motivo).");
+    d.MOTIVO_NO = Number(m); d.PROTESTA = (r.DAP_MIN === 0 && (m === "4" || m === "5")) ? 1 : 0;
+  } else { d.MOTIVO_NO = ""; d.PROTESTA = 0; }
+  if (r.DAP_MIN > 0){
+    const a = val("AVISAR"); if (a === null) return err("Responda la pregunta 17.");
     d.AVISAR = Number(a); d.CELULAR = a === "1" ? document.getElementById("CELULAR").value.trim() : "";
   }
 
