@@ -44,6 +44,12 @@
   .price{font-size:1.25rem; color:var(--azul); font-weight:800; white-space:nowrap;}
   .note{font-size:.85rem; color:var(--gris);}
   .hidden{display:none !important;}
+  .ladder{display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:4px 0 10px;}
+  .ladder .step{border:2px solid var(--borde); border-radius:20px; padding:6px 12px; font-weight:700; color:var(--gris); background:#fbfdfe;}
+  .ladder .step.start{border-color:var(--azul2);}
+  .ladder .step.ok{background:#e6f4ea; border-color:var(--verde); color:var(--verde);}
+  .ladder .step.no{background:#fdecea; border-color:var(--rojo); color:var(--rojo); text-decoration:line-through;}
+  .ladder .arr{font-size:.8rem; color:var(--gris);}
   .endbox{background:#fdecea; color:var(--rojo); border-radius:10px; padding:14px; font-weight:600;}
   button.submit{width:100%; background:var(--verde); color:#fff; border:none; padding:15px;
     border-radius:10px; font-size:1.05rem; font-weight:700; cursor:pointer; margin-top:16px;}
@@ -97,7 +103,14 @@
       </div>
 
       <h2>C. Disposición a pagar</h2>
-      <p class="note">Pregunte un precio a la vez. Si responde Sí, pase al siguiente precio más alto; si responde No, deténgase.</p>
+      <div class="ladder" id="ladder">
+        <span class="step" id="st5">S/ 5</span><span class="arr">←No</span>
+        <span class="step start" id="st10">S/ 10</span><span class="arr">Sí→</span>
+        <span class="step" id="st20">S/ 20</span><span class="arr">Sí→</span>
+        <span class="step" id="st30">S/ 30</span><span class="arr">Sí→</span>
+        <span class="step" id="st40">S/ 40</span>
+      </div>
+      <p class="note">Escalera de precios: se empieza en S/ 10. Si responde Sí, aparece el precio siguiente; si responde No, se detiene. Si rechaza S/ 10, se pregunta S/ 5.</p>
       <div class="q" id="qL10"><div class="t"><b>14.</b>Si el servicio costara <span class="price">S/ 10</span> por cada recojo y entrega, ¿lo contrataría?</div>
         <div class="opts"><label><input type="radio" name="SI_10" value="1">Sí</label><label><input type="radio" name="SI_10" value="0">No</label></div></div>
       <div class="q hidden" id="qL5"><div class="t">¿Y si costara <span class="price">S/ 5</span>?</div>
@@ -203,6 +216,10 @@ function evaluarDAP(ev){
   show("qL40", v10 === "1" && v20 === "1" && v30 === "1");
   show("qMax", v40 === "1");
   const r = escalera();
+  for (const p of [5,10,20,30,40]){
+    const el = document.getElementById("st" + p), v = r["SI_" + p];
+    el.className = "step" + (p === 10 ? " start" : "") + (v === 1 ? " ok" : v === 0 ? " no" : "");
+  }
   show("qRes", r.completa);
   if (r.completa){
     document.getElementById("resTxt").textContent =
