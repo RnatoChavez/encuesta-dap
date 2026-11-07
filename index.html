@@ -82,9 +82,9 @@
 
       <div class="q"><div class="t"><b>1.</b>Edad del adulto mayor (años)</div><input type="number" id="EDAD" min="60" max="110"></div>
       <div id="perfil1"></div>
-      <div class="q"><div class="t"><b>9.</b>¿Cuántas veces al mes va a recoger o comprar sus medicamentos?</div><input type="number" id="VECES" min="0" max="31" step="1"></div>
-      <div class="q"><div class="t"><b>10.</b>¿Cuánto gasta en movilidad cada vez que va? (S/)</div><input type="number" id="MOVILIDAD" min="0" step="0.5"></div>
-      <div class="q"><div class="t"><b>11.</b>¿Cuánto tiempo le toma en total cada vez (ida, espera y vuelta)? (horas)</div><input type="number" id="HORAS" min="0" step="0.5"></div>
+      <div class="q"><div class="t"><b>7.</b>¿Cuántas veces al mes va a recoger o comprar sus medicamentos?</div><input type="number" id="VECES" min="0" max="31" step="1"></div>
+      <div class="q"><div class="t"><b>8.</b>¿Cuánto gasta en movilidad cada vez que va? (S/)</div><input type="number" id="MOVILIDAD" min="0" step="0.5"></div>
+      <div class="q"><div class="t"><b>9.</b>¿Cuánto tiempo le toma en total cada vez (ida, espera y vuelta)? (horas)</div><input type="number" id="HORAS" min="0" step="0.5"></div>
       <div id="perfil2"></div>
 
       <h2>B. Escenario (leer textualmente)</h2>
@@ -98,15 +98,15 @@
       </div>
 
       <h2>C. Disposición a pagar</h2>
-      <div class="q"><div class="t"><b>16.</b>Si el servicio costara <span class="price" id="bidTxt">S/ —</span> por cada recojo y entrega, ¿lo contrataría?</div>
+      <div class="q"><div class="t"><b>14.</b>Si el servicio costara <span class="price" id="bidTxt">S/ —</span> por cada recojo y entrega, ¿lo contrataría?</div>
         <div class="opts"><label><input type="radio" name="SI_DAP" value="1">Sí</label><label><input type="radio" name="SI_DAP" value="0">No</label></div></div>
-      <div class="q hidden" id="q21"><div class="t"><b>17.</b>¿Y si costara <span class="price" id="bid2Txt">S/ —</span> por cada recojo y entrega?</div>
+      <div class="q hidden" id="q21"><div class="t"><b>15.</b>¿Y si costara <span class="price" id="bid2Txt">S/ —</span> por cada recojo y entrega?</div>
         <div class="opts"><label><input type="radio" name="SI_DAP2" value="1">Sí</label><label><input type="radio" name="SI_DAP2" value="0">No</label></div></div>
-      <div class="q"><div class="t"><b>18.</b>¿Qué tan seguro está de su respuesta?</div>
+      <div class="q"><div class="t"><b>16.</b>¿Qué tan seguro está de su respuesta?</div>
         <div class="opts"><label><input type="radio" name="SEGURO" value="1">Muy seguro</label><label><input type="radio" name="SEGURO" value="0">No muy seguro</label></div></div>
 
       <h2>D. Seguimiento</h2>
-      <div class="q hidden" id="q23"><div class="t"><b>19.</b>¿Cuál es el motivo principal por el que no lo contrataría?</div>
+      <div class="q hidden" id="q23"><div class="t"><b>17.</b>¿Cuál es el motivo principal por el que no lo contrataría?</div>
         <div class="opts col">
           <label><input type="radio" name="MOTIVO_NO" value="1">No me alcanza el dinero</label>
           <label><input type="radio" name="MOTIVO_NO" value="2">El servicio no vale ese precio</label>
@@ -115,7 +115,7 @@
           <label><input type="radio" name="MOTIVO_NO" value="5">Ese servicio debería darlo gratis EsSalud o el Estado</label>
           <label><input type="radio" name="MOTIVO_NO" value="6">Otro motivo</label>
         </div></div>
-      <div class="q hidden" id="q24"><div class="t"><b>20.</b>¿Le gustaría que le avisemos cuando el servicio esté disponible?</div>
+      <div class="q hidden" id="q24"><div class="t"><b>18.</b>¿Le gustaría que le avisemos cuando el servicio esté disponible?</div>
         <div class="opts"><label><input type="radio" name="AVISAR" value="1">Sí</label><label><input type="radio" name="AVISAR" value="0">No</label></div>
         <div style="margin-top:10px" id="celBox" class="hidden"><input type="tel" id="CELULAR" placeholder="Celular (opcional)"></div></div>
 
@@ -137,18 +137,16 @@ let VERSION = null, BID = null;
 
 const PERFIL1 = [
   ["MUJER","2.","¿El adulto mayor es mujer?"],
-  ["ESSALUD","3.","¿Tiene seguro de EsSalud?"],
-  ["SIS","4.","¿Tiene SIS?"],
-  ["POLIMED","5.","¿Toma tres o más medicamentos distintos al mes?"],
-  ["DEPEND","6.","¿Tiene dificultad para caminar o salir solo de casa?"],
-  ["TRABAJA","7.","¿Usted (el familiar) trabaja actualmente?"],
-  ["PERMISO","8.","¿Ha tenido que faltar o pedir permiso en el trabajo para recoger medicamentos en los últimos 3 meses?"]
+  ["POLIMED","3.","¿Toma tres o más medicamentos distintos al mes?"],
+  ["DEPEND","4.","¿Tiene dificultad para caminar o salir solo de casa?"],
+  ["TRABAJA","5.","¿Usted (el familiar) trabaja actualmente?"],
+  ["PERMISO","6.","¿Ha tenido que faltar o pedir permiso en el trabajo para recoger medicamentos en los últimos 3 meses?"]
 ];
 const PERFIL2 = [
-  ["SINSTOCK","12.","¿Alguna vez ha regresado sin el medicamento porque no había stock?"],
-  ["WHATSAPP","13.","¿El adulto mayor o usted usan WhatsApp todos los días?"],
-  ["DELIVERY","14.","¿Ha usado alguna vez un delivery de botica o farmacia?"],
-  ["INGRESO","15.","¿El ingreso mensual de su hogar es mayor a S/ 2 500?"]
+  ["SINSTOCK","10.","¿Alguna vez ha regresado sin el medicamento porque no había stock?"],
+  ["WHATSAPP","11.","¿El adulto mayor o usted usan WhatsApp todos los días?"],
+  ["DELIVERY","12.","¿Ha usado alguna vez un delivery de botica o farmacia?"],
+  ["INGRESO","13.","¿El ingreso mensual de su hogar es mayor a S/ 2 500?"]
 ];
 
 function siNo(name, num, txt){
@@ -165,7 +163,7 @@ const show = (id, on) => document.getElementById(id).classList.toggle("hidden", 
 let ultimoSI = null;
 function evaluarDAP(){
   const s = val("SI_DAP");
-  if (s !== ultimoSI){   // si cambia la respuesta 16, la repregunta se vuelve a contestar
+  if (s !== ultimoSI){   // si cambia la respuesta 14, la repregunta se vuelve a contestar
     document.querySelectorAll('input[name="SI_DAP2"]').forEach(i => i.checked = false);
     ultimoSI = s;
   }
@@ -227,18 +225,18 @@ function enviar(){
     d[f[0]] = Number(v);
   }
   const s = val("SI_DAP"), s2 = val("SI_DAP2"), seg = val("SEGURO");
-  if (s === null) return err("Responda la pregunta 16 (disposición a pagar).");
-  if (s2 === null) return err("Responda la pregunta 17.");
-  if (seg === null) return err("Responda la pregunta 18.");
+  if (s === null) return err("Responda la pregunta 14 (disposición a pagar).");
+  if (s2 === null) return err("Responda la pregunta 15.");
+  if (seg === null) return err("Responda la pregunta 16.");
   d.SI_DAP = Number(s); d.SI_DAP2 = Number(s2); d.SEGURO = Number(seg);
   d.BID2 = s === "1" ? BID_ALTO[BID] : BID_BAJO[BID];
 
   if (s === "0"){
-    const m = val("MOTIVO_NO"); if (m === null) return err("Responda la pregunta 19 (motivo).");
+    const m = val("MOTIVO_NO"); if (m === null) return err("Responda la pregunta 17 (motivo).");
     d.MOTIVO_NO = Number(m); d.PROTESTA = (m === "4" || m === "5") ? 1 : 0;
   } else {
     d.MOTIVO_NO = ""; d.PROTESTA = 0;
-    const a = val("AVISAR"); if (a === null) return err("Responda la pregunta 20.");
+    const a = val("AVISAR"); if (a === null) return err("Responda la pregunta 18.");
     d.AVISAR = Number(a); d.CELULAR = a === "1" ? document.getElementById("CELULAR").value.trim() : "";
   }
 
